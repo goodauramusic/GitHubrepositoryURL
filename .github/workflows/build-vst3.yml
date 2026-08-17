@@ -1,0 +1,57 @@
+name: Build ChordFlow Melody VST3
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15-intel
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install JUCE
+        run: |
+          git clone --depth 1 https://github.com/juce-framework/JUCE.git "$RUNNER_TEMP/JUCE"
+
+      - name: Configure
+        run: |
+          cmake -S . \
+            -B build \
+            -DJUCE_DIR="$RUNNER_TEMP/JUCE" \
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: |
+          cmake --build build \
+            --config Release \
+            --parallel
+
+      - name: Find VST3
+        run: |
+          find build -type d -name "*.vst3" -print
+
+      - name: Package
+        run: |
+          VST3=$(find build -type d -name "*.vst3" -print -quit)
+
+          if [ -z "$VST3" ]; then
+            echo "VST3 was not created."
+            exit 1
+          fi
+
+          mkdir -p artifact
+          cp -R "$VST3" artifact/
+
+          ditto -c -k \
+            --sequesterRsrc \
+            --keepParent \
+            "$VST3" \
+            artifact/ChordFlow-Melody-VST3.zip
+
+      - name: Upload VST3
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChordFlow-Melody-VST3
+          path: artifact/ChordFlow-Melody-VST3.zip
