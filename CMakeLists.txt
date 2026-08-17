@@ -16,11 +16,16 @@ juce_add_plugin(ChordFlowMelody
     PRODUCT_NAME "ChordFlow Melody"
     PLUGIN_MANUFACTURER_CODE Gaur
     PLUGIN_CODE CfMl
+
     FORMATS VST3
+
     IS_MIDI_EFFECT TRUE
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT TRUE
+
     VST3_CATEGORIES "Generator"
+
+    JUCE_VST3_CAN_REPLACE_VST2 FALSE
 )
 
 target_sources(ChordFlowMelody
@@ -39,6 +44,7 @@ target_link_libraries(ChordFlowMelody
         juce::juce_audio_processors
         juce::juce_audio_plugin_client
         juce::juce_gui_extra
+
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
