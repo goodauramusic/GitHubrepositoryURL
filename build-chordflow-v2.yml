@@ -1,0 +1,86 @@
+name: ChordFlow VST3 Builder V2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ChordFlow on Intel Mac
+    runs-on: macos-15-intel
+
+    steps:
+
+      - name: Download project
+        uses: actions/checkout@v4
+
+      - name: Download JUCE
+        run: |
+          git clone --depth 1 \
+            https://github.com/juce-framework/JUCE.git \
+            "$RUNNER_TEMP/JUCE"
+
+      - name: Configure project
+        run: |
+          cmake \
+            -S "$GITHUB_WORKSPACE" \
+            -B "$RUNNER_TEMP/chordflow-build" \
+            -DJUCE_DIR="$RUNNER_TEMP/JUCE" \
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Compile ChordFlow
+        run: |
+          cmake \
+            --build "$RUNNER_TEMP/chordflow-build" \
+            --config Release \
+            --parallel
+
+      - name: Search for VST3
+        run: |
+          echo "================================"
+          echo "SEARCHING FOR CHORDFLOW VST3"
+          echo "================================"
+
+          find "$RUNNER_TEMP/chordflow-build" \
+            -type d \
+            -name "*.vst3" \
+            -print
+
+          echo "================================"
+          echo "ALL BUILD DIRECTORIES"
+          echo "================================"
+
+          find "$RUNNER_TEMP/chordflow-build" \
+            -maxdepth 7 \
+            -type d \
+            -print
+
+      - name: Package ChordFlow
+        run: |
+          PLUGIN=$(find "$RUNNER_TEMP/chordflow-build" \
+            -type d \
+            -name "*.vst3" \
+            -print -quit)
+
+          if [ -z "$PLUGIN" ]; then
+            echo "ERROR: ChordFlow VST3 was not found."
+            exit 1
+          fi
+
+          echo "FOUND:"
+          echo "$PLUGIN"
+
+          mkdir -p "$GITHUB_WORKSPACE/output"
+
+          cp -R "$PLUGIN" "$GITHUB_WORKSPACE/output/"
+
+          ditto -c -k \
+            --sequesterRsrc \
+            --keepParent \
+            "$PLUGIN" \
+            "$GITHUB_WORKSPACE/output/ChordFlow-Melody-VST3.zip"
+
+      - name: Upload ChordFlow
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChordFlow-Melody-VST3
+          path: output/ChordFlow-Melody-VST3.zip
