@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<JUCERPROJECT id="cfml" name="ChordFlowMelody" projectType="audioplug"
+ version="0.2.0" bundleIdentifier="com.goodauramusic.chordflowmelody"
+ companyName="Good Aura Music" displaySplashScreen="0" reportAppUsage="0"
+ cppLanguageStandard="17" pluginFormats="buildVST3,buildStandalone"
+ pluginCharacteristics="pluginWantsMidiIn,pluginProducesMidiOut"
+ pluginVST3Category="Generator" pluginIsSynth="0"
+ pluginCode="CfMl" pluginManufacturerCode="Gaur" jucerFormatVersion="1.0">
+<MAINGROUP id="main" name="ChordFlowMelody">
+ <GROUP id="source" name="Source">
+  <FILE id="p" name="PluginProcessor.cpp" compile="1" resource="0" file="Source/PluginProcessor.cpp"/>
+  <FILE id="ph" name="PluginProcessor.h" compile="0" resource="0" file="Source/PluginProcessor.h"/>
+  <FILE id="e" name="PluginEditor.cpp" compile="1" resource="0" file="Source/PluginEditor.cpp"/>
+  <FILE id="eh" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+ </GROUP>
+</MAINGROUP>
+<EXPORTFORMATS>
+ <XCODE_MAC targetFolder="Builds/MacOSX" xcodeValidArchs="x86_64" macOSDeploymentTarget="10.15">
+  <CONFIGURATIONS>
+   <CONFIGURATION isDebug="1" name="Debug" targetName="ChordFlowMelody"/>
+   <CONFIGURATION isDebug="0" name="Release" targetName="ChordFlowMelody"/>
+  </CONFIGURATIONS>
+ </XCODE_MAC>
+</EXPORTFORMATS>
+<MODULEPATHS>
+ <MODULEPATH id="juce_audio_basics" path="../JUCE/modules"/>
+ <MODULEPATH id="juce_audio_devices" path="../JUCE/modules"/>
+ <MODULEPATH id="juce_audio_formats" path="../JUCE/modules"/>
+ <MODULEPATH id="juce_audio_plugin_client" path="../JUCE/modules"/>
+ <MODULEPATH id="juce_audio_processors" path="../JUCE/modules"/>
+ <MODULEPATH id="juce_audio_utils" path="../JUCE/modules"/>
+ <MODULEPATH id="juce_core" path="../JUCE/modules"/>
+ <MODULEPATH id="juce_data_structures" path="../JUCE/modules"/>
+ <MODULEPATH id="juce_events" path="../JUCE/modules"/>
+ <MODULEPATH id="juce_graphics" path="../JUCE/modules"/>
+ <MODULEPATH id="juce_gui_basics" path="../JUCE/modules"/>
+ <MODULEPATH id="juce_gui_extra" path="../JUCE/modules"/>
+</MODULEPATHS>
+</JUCERPROJECT>

@@ -1,0 +1,12 @@
+CHORDFLOW MELODY — XCODE-ONLY
+
+1. Put this folder in Downloads.
+2. Put your JUCE folder in Downloads.
+3. Open JUCE/Projucer.app.
+4. Open ChordFlowMelody.jucer.
+5. Click "Save Project and Open in IDE".
+6. Xcode opens.
+7. Select the ChordFlowMelody - Standalone target and press Command-B.
+8. To build the VST3 later, select the VST3 target and press Command-B.
+
+This project targets Intel x86_64 and enables MIDI input/output.
