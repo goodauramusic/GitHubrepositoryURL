@@ -1,0 +1,44 @@
+cmake_minimum_required(VERSION 3.22)
+
+project(ChordFlowMelody VERSION 0.2.0)
+
+if(NOT DEFINED JUCE_DIR)
+    message(FATAL_ERROR "JUCE_DIR is required")
+endif()
+
+add_subdirectory(${JUCE_DIR} JUCE)
+
+juce_add_plugin(ChordFlowMelody
+    COMPANY_NAME "Good Aura Music"
+    PRODUCT_NAME "ChordFlow Melody"
+
+    PLUGIN_MANUFACTURER_CODE Gaur
+    PLUGIN_CODE CfMl
+
+    FORMATS VST3
+
+    IS_MIDI_EFFECT TRUE
+    NEEDS_MIDI_INPUT TRUE
+    NEEDS_MIDI_OUTPUT TRUE
+
+    VST3_CATEGORIES "Generator"
+)
+
+target_sources(ChordFlowMelody PRIVATE
+    Source/PluginProcessor.cpp
+    Source/PluginProcessor.h
+    Source/PluginEditor.cpp
+    Source/PluginEditor.h
+)
+
+target_compile_features(ChordFlowMelody PRIVATE
+    cxx_std_17
+)
+
+target_link_libraries(ChordFlowMelody PRIVATE
+    juce::juce_audio_utils
+    juce::juce_audio_processors
+    juce::juce_gui_extra
+)
+
+juce_generate_juce_header(ChordFlowMelody)
