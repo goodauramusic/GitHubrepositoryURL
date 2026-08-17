@@ -38,6 +38,10 @@ target_sources(ChordFlowMelody
 
 target_compile_features(ChordFlowMelody PRIVATE cxx_std_17)
 
+target_compile_definitions(ChordFlowMelody PRIVATE
+    JUCE_VST3_CAN_REPLACE_VST2=0
+)
+
 target_link_libraries(ChordFlowMelody
     PRIVATE
         juce::juce_audio_utils
