@@ -1,3 +1,4 @@
+```cmake
 cmake_minimum_required(VERSION 3.22)
 
 project(ChordFlowMelody VERSION 1.0.0)
@@ -27,8 +28,6 @@ juce_add_plugin(ChordFlowMelody
     VST3_CATEGORIES "Generator"
 
     JUCE_VST3_CAN_REPLACE_VST2 FALSE
-
-    VST3_AUTO_MANIFEST FALSE
 
     COPY_PLUGIN_AFTER_BUILD FALSE
 )
@@ -69,7 +68,6 @@ target_link_libraries(
 
 juce_generate_juce_header(ChordFlowMelody)
 
-
 # =========================================================
 # macOS VST3 signing
 # =========================================================
@@ -87,15 +85,17 @@ if(APPLE)
             --sign -
             "$<TARGET_BUNDLE_DIR:ChordFlowMelody_VST3>"
 
+        COMMAND
+            /usr/bin/codesign
+            --verify
+            --deep
+            --strict
+            --verbose=2
+            "$<TARGET_BUNDLE_DIR:ChordFlowMelody_VST3>"
+
         COMMENT
-            "Ad-hoc signing ChordFlow Melody VST3"
+            "Signing and verifying ChordFlow Melody VST3"
     )
 
 endif()
-
-
-# =========================================================
-# Generate VST3 moduleinfo.json AFTER signing
-# =========================================================
-
-juce_enable_vst3_manifest_step(ChordFlowMelody)
+```
