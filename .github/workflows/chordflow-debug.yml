@@ -1,0 +1,73 @@
+name: ChordFlow Melody Debug Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ChordFlow VST3
+    runs-on: macos-15-intel
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install JUCE
+        run: |
+          git clone --depth 1 \
+            https://github.com/juce-framework/JUCE.git \
+            "$RUNNER_TEMP/JUCE"
+
+      - name: Configure CMake
+        run: |
+          cmake \
+            -S "$GITHUB_WORKSPACE" \
+            -B "$RUNNER_TEMP/chordflow-build" \
+            -DJUCE_DIR="$RUNNER_TEMP/JUCE" \
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Show available targets
+        run: |
+          cmake \
+            --build "$RUNNER_TEMP/chordflow-build" \
+            --target help
+
+      - name: Build everything
+        run: |
+          cmake \
+            --build "$RUNNER_TEMP/chordflow-build" \
+            --config Release \
+            --parallel
+
+      - name: Find VST3
+        run: |
+          echo "========================================"
+          echo "SEARCHING FOR VST3 FILES"
+          echo "========================================"
+
+          find "$RUNNER_TEMP/chordflow-build" \
+            -type d \
+            -name "*.vst3" \
+            -print || true
+
+          echo "========================================"
+          echo "SEARCHING FOR CHORDFLOW"
+          echo "========================================"
+
+          find "$RUNNER_TEMP/chordflow-build" \
+            -iname "*chordflow*" \
+            -print || true
+
+      - name: Create diagnostic archive
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/diagnostic"
+
+          cp -R "$RUNNER_TEMP/chordflow-build" \
+            "$GITHUB_WORKSPACE/diagnostic/build"
+
+      - name: Upload complete build
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChordFlow-Diagnostic-Build
+          path: diagnostic/
