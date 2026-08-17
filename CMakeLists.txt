@@ -67,10 +67,6 @@ target_link_libraries(
 
 juce_generate_juce_header(ChordFlowMelody)
 
-# =========================================================
-# macOS VST3 signing
-# =========================================================
-
 if(APPLE)
 
     add_custom_command(
@@ -89,12 +85,10 @@ if(APPLE)
             --verify
             --deep
             --strict
-            --verbose=2
             "$<TARGET_BUNDLE_DIR:ChordFlowMelody_VST3>"
 
         COMMENT
-            "Signing and verifying ChordFlow Melody VST3"
+            "Signing and verifying ChordFlow Melody VST3 bundle"
     )
 
 endif()
-```
