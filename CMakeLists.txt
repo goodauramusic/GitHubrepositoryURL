@@ -26,6 +26,8 @@ juce_add_plugin(ChordFlowMelody
     VST3_CATEGORIES "Generator"
 
     JUCE_VST3_CAN_REPLACE_VST2 FALSE
+
+    COPY_PLUGIN_AFTER_BUILD FALSE
 )
 
 target_sources(ChordFlowMelody
