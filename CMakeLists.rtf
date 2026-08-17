@@ -31,15 +31,15 @@ juce_add_plugin(ChordFlowMelody\
     NEEDS_MIDI_INPUT TRUE\
     NEEDS_MIDI_OUTPUT TRUE\
 \
-    VST3_CATEGORIES "Fx"\
+    VST3_CATEGORIES "Generator"\
 )\
 \
 target_sources(ChordFlowMelody\
     PRIVATE\
-        Source/PluginProcessor.cpp\
-        Source/PluginProcessor.h\
-        Source/PluginEditor.cpp\
-        Source/PluginEditor.h\
+        PluginProcessor.cpp\
+        PluginProcessor.h\
+        PluginEditor.cpp\
+        PluginEditor.h\
 )\
 \
 target_compile_features(\
