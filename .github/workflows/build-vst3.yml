@@ -1,57 +1,60 @@
-name: Build ChordFlow Melody VST3
+cmake_minimum_required(VERSION 3.22)
 
-on:
-  workflow_dispatch:
+project(ChordFlowMelody VERSION 1.0.0)
 
-jobs:
-  build:
-    runs-on: macos-15-intel
+if(NOT DEFINED JUCE_DIR)
+    message(FATAL_ERROR "JUCE_DIR has not been specified")
+endif()
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+add_subdirectory(
+    "${JUCE_DIR}"
+    "${CMAKE_BINARY_DIR}/JUCE"
+)
 
-      - name: Install JUCE
-        run: |
-          git clone --depth 1 https://github.com/juce-framework/JUCE.git "$RUNNER_TEMP/JUCE"
+juce_add_plugin(ChordFlowMelody
+    COMPANY_NAME "Good Aura Music"
+    PRODUCT_NAME "ChordFlow Melody"
+    PLUGIN_MANUFACTURER_CODE Gaur
+    PLUGIN_CODE CfMl
 
-      - name: Configure
-        run: |
-          cmake -S . \
-            -B build \
-            -DJUCE_DIR="$RUNNER_TEMP/JUCE" \
-            -DCMAKE_BUILD_TYPE=Release
+    FORMATS VST3
 
-      - name: Build
-        run: |
-          cmake --build build \
-            --config Release \
-            --parallel
+    IS_MIDI_EFFECT TRUE
+    NEEDS_MIDI_INPUT TRUE
+    NEEDS_MIDI_OUTPUT TRUE
 
-      - name: Find VST3
-        run: |
-          find build -type d -name "*.vst3" -print
+    VST3_CATEGORIES "Generator"
 
-      - name: Package
-        run: |
-          VST3=$(find build -type d -name "*.vst3" -print -quit)
+    JUCE_VST3_CAN_REPLACE_VST2 FALSE
 
-          if [ -z "$VST3" ]; then
-            echo "VST3 was not created."
-            exit 1
-          fi
+    COPY_PLUGIN_AFTER_BUILD FALSE
+)
 
-          mkdir -p artifact
-          cp -R "$VST3" artifact/
+target_sources(ChordFlowMelody
+    PRIVATE
+        PluginProcessor.cpp
+        PluginProcessor.h
+        PluginEditor.cpp
+        PluginEditor.h
+)
 
-          ditto -c -k \
-            --sequesterRsrc \
-            --keepParent \
-            "$VST3" \
-            artifact/ChordFlow-Melody-VST3.zip
+target_compile_features(ChordFlowMelody PRIVATE cxx_std_17)
 
-      - name: Upload VST3
-        uses: actions/upload-artifact@v4
-        with:
-          name: ChordFlow-Melody-VST3
-          path: artifact/ChordFlow-Melody-VST3.zip
+target_compile_definitions(ChordFlowMelody PRIVATE
+    JUCE_VST3_CAN_REPLACE_VST2=0
+)
+
+target_link_libraries(ChordFlowMelody
+    PRIVATE
+        juce::juce_audio_utils
+        juce::juce_audio_processors
+        juce::juce_audio_plugin_client
+        juce::juce_gui_extra
+
+    PUBLIC
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_lto_flags
+        juce::juce_recommended_warning_flags
+)
+
+juce_generate_juce_header(ChordFlowMelody)
