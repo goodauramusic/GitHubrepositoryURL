@@ -1,4 +1,3 @@
-```cmake
 cmake_minimum_required(VERSION 3.22)
 
 project(ChordFlowMelody VERSION 1.0.0)
