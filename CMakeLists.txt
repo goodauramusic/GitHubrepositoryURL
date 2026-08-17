@@ -1,3 +1,4 @@
+```cmake
 cmake_minimum_required(VERSION 3.22)
 
 project(ChordFlowMelody VERSION 1.0.0)
@@ -14,6 +15,7 @@ add_subdirectory(
 juce_add_plugin(ChordFlowMelody
     COMPANY_NAME "Good Aura Music"
     PRODUCT_NAME "ChordFlow Melody"
+
     PLUGIN_MANUFACTURER_CODE Gaur
     PLUGIN_CODE CfMl
 
@@ -38,13 +40,20 @@ target_sources(ChordFlowMelody
         PluginEditor.h
 )
 
-target_compile_features(ChordFlowMelody PRIVATE cxx_std_17)
-
-target_compile_definitions(ChordFlowMelody PRIVATE
-    JUCE_VST3_CAN_REPLACE_VST2=0
+target_compile_features(
+    ChordFlowMelody
+    PRIVATE
+        cxx_std_17
 )
 
-target_link_libraries(ChordFlowMelody
+target_compile_definitions(
+    ChordFlowMelody
+    PRIVATE
+        JUCE_VST3_CAN_REPLACE_VST2=0
+)
+
+target_link_libraries(
+    ChordFlowMelody
     PRIVATE
         juce::juce_audio_utils
         juce::juce_audio_processors
@@ -58,3 +67,40 @@ target_link_libraries(ChordFlowMelody
 )
 
 juce_generate_juce_header(ChordFlowMelody)
+
+# ---------------------------------------------------------
+# macOS VST3 signing
+# ---------------------------------------------------------
+# Sign the COMPLETE VST3 bundle after JUCE has generated
+# the manifest/moduleinfo files.
+#
+# This prevents the "sealed resource is missing or invalid"
+# problem caused when moduleinfo.json is added after signing.
+# ---------------------------------------------------------
+
+if(APPLE)
+
+    add_custom_command(
+        TARGET ChordFlowMelody_VST3
+        POST_BUILD
+
+        COMMAND
+            /usr/bin/codesign
+            --force
+            --deep
+            --sign -
+            "$<TARGET_BUNDLE_DIR:ChordFlowMelody_VST3>"
+
+        COMMAND
+            /usr/bin/codesign
+            --verify
+            --deep
+            --strict
+            "$<TARGET_BUNDLE_DIR:ChordFlowMelody_VST3>"
+
+        COMMENT
+            "Signing and verifying ChordFlow Melody VST3 bundle"
+    )
+
+endif()
+```
