@@ -2,6 +2,21 @@ cmake_minimum_required(VERSION 3.22)
 
 project(ChordFlowMelody VERSION 1.0.0)
 
+# ---------------------------------------------------------
+# macOS compatibility
+# Your Mac is running macOS 10.15 Catalina.
+# Build specifically for Catalina and Intel x86_64.
+# ---------------------------------------------------------
+
+if(APPLE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum macOS version" FORCE)
+    set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE STRING "macOS architecture" FORCE)
+endif()
+
+# ---------------------------------------------------------
+# JUCE
+# ---------------------------------------------------------
+
 if(NOT DEFINED JUCE_DIR)
     message(FATAL_ERROR "JUCE_DIR has not been specified")
 endif()
@@ -10,6 +25,10 @@ add_subdirectory(
     "${JUCE_DIR}"
     "${CMAKE_BINARY_DIR}/JUCE"
 )
+
+# ---------------------------------------------------------
+# Plugin
+# ---------------------------------------------------------
 
 juce_add_plugin(ChordFlowMelody
     COMPANY_NAME "Good Aura Music"
@@ -31,6 +50,10 @@ juce_add_plugin(ChordFlowMelody
     COPY_PLUGIN_AFTER_BUILD FALSE
 )
 
+# ---------------------------------------------------------
+# Source files
+# ---------------------------------------------------------
+
 target_sources(ChordFlowMelody
     PRIVATE
         PluginProcessor.cpp
@@ -39,17 +62,29 @@ target_sources(ChordFlowMelody
         PluginEditor.h
 )
 
+# ---------------------------------------------------------
+# C++ standard
+# ---------------------------------------------------------
+
 target_compile_features(
     ChordFlowMelody
     PRIVATE
         cxx_std_17
 )
 
+# ---------------------------------------------------------
+# JUCE definitions
+# ---------------------------------------------------------
+
 target_compile_definitions(
     ChordFlowMelody
     PRIVATE
         JUCE_VST3_CAN_REPLACE_VST2=0
 )
+
+# ---------------------------------------------------------
+# JUCE libraries
+# ---------------------------------------------------------
 
 target_link_libraries(
     ChordFlowMelody
@@ -65,7 +100,17 @@ target_link_libraries(
         juce::juce_recommended_warning_flags
 )
 
+# ---------------------------------------------------------
+# JUCE generated header
+# ---------------------------------------------------------
+
 juce_generate_juce_header(ChordFlowMelody)
+
+# ---------------------------------------------------------
+# macOS VST3 signing
+# Sign the completed VST3 bundle after all resources
+# have been generated.
+# ---------------------------------------------------------
 
 if(APPLE)
 
